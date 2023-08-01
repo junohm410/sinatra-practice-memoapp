@@ -1,0 +1,12 @@
+<div>
+  <h2><%= h(@memo[:title]) %></h2>
+  <p><%= h(@memo[:text]).gsub(/\r\n|\n\r|\r|\n/, "<br>") %></p>
+</div>
+<div>
+  <a class="operation-button" href="/memos">戻る</a>
+  <a class="operation-button" href="/memos/<%= @id %>/edit">変更</a>
+  <form class="operation-form" action="/memos/<%= @id %>" method="post">
+    <input type="hidden" name="_method" value="delete">
+    <input class="operation-button" type="submit" value="削除">
+  </form>
+</div>
