@@ -14,7 +14,7 @@ $ bundle install
 ```
 
 ## 実行
-1. `app.rb`を実行。
+1. `memo_app.rb`を実行。
 ```
 $ bundle exec ruby memo_app.rb
 ```
