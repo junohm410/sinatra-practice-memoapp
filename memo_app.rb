@@ -27,11 +27,11 @@ def read_memos_file
 end
 
 def create_new_memo(title, text)
-  memo_hash = {}
-  memo_hash[:id] = SecureRandom.uuid
-  memo_hash[:title] = title
-  memo_hash[:text] = text
-  memo_hash
+  {
+    id: SecureRandom.uuid,
+    title:,
+    text:
+  }
 end
 
 def update_memo_file(memos)
@@ -68,7 +68,9 @@ get '/memos/:id' do |id|
   @title = 'メモ詳細'
   @id = id
   target_memo = read_memos_file.find { |memo| memo[:id] == id }
-  target_memo.nil? ? pass : @memo = target_memo
+  raise Sinatra::NotFound if target_memo.nil?
+
+  @memo = target_memo
   erb :memo
 end
 
@@ -83,8 +85,7 @@ end
 
 delete '/memos/:id' do |id|
   memos = read_memos_file
-  target_memo = memos.find { |memo| memo[:id] == id }
-  memos.delete(target_memo)
+  memos = memos.reject { |memo| memo[:id] == id }
   update_memo_file(memos)
   redirect to('/memos')
 end
@@ -94,10 +95,6 @@ get '/memos/:id/edit' do |id|
   @id = id
   @memo = read_memos_file.find { |memo| memo[:id] == id }
   erb :edit
-end
-
-get '/memos/*' do
-  status 404
 end
 
 not_found do
