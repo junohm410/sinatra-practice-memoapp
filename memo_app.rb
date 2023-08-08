@@ -85,8 +85,8 @@ end
 
 delete '/memos/:id' do |id|
   memos = read_memos_file
-  memos = memos.reject { |memo| memo[:id] == id }
-  update_memo_file(memos)
+  modified_memos = memos.reject { |memo| memo[:id] == id }
+  update_memo_file(modified_memos)
   redirect to('/memos')
 end
 
