@@ -41,7 +41,7 @@ end
 #   end
 # end
 
-def hash_symbolize_keys(hash)
+def symbolize_keys(hash)
   hash.transform_keys(&:to_sym)
 end
 
@@ -60,12 +60,12 @@ end
 get '/memos' do
   @title = 'メモ一覧'
 
-  memos = ''
   conn = PG.connect( dbname: 'memo' )
-  conn.exec( "SELECT * FROM memo ORDER BY added_time ASC" ) do |result|
-    memos = result.map { |row| row }
-  end
-  @memos = memos.map { |memo| hash_symbolize_keys(memo) }
+  @memos = 
+    conn.exec( "SELECT * FROM memo ORDER BY added_time ASC" ) do |result|
+      result.map { |row| symbolize_keys(row) }
+    end
+  # @memos = memos.map { |memo| hash_symbolize_keys(memo) }
   conn.finish
   erb :memos
 end
@@ -107,15 +107,14 @@ get '/memos/:id' do |id|
   @title = 'メモ詳細'
   @id = id
 
-  target_memo = ''
   conn = PG.connect( dbname: 'memo' )
-  conn.exec_params( "SELECT * FROM memo WHERE id = $1", [id] ) do |result|
-    target_memo = result.map { |row| row }
-  end
-  raise Sinatra::NotFound if target_memo.empty?
+  # conn.exec_params( "SELECT * FROM memo WHERE id = $1", [id] ) do |result|
+  #   target_memo = result.map { |row| row }
+  # end
+  search_result = conn.exec_params( "SELECT * FROM memo WHERE id = $1", [id] )
+  raise Sinatra::NotFound if search_result.ntuples.zero?
   
-  target_memo = hash_symbolize_keys(target_memo[0])
-  @memo = target_memo
+  @memo = symbolize_keys(search_result.first)
   conn.finish
   erb :memo
 end
@@ -164,15 +163,14 @@ get '/memos/:id/edit' do |id|
   @title = 'メモ編集'
   @id = id
 
-  target_memo = ''
   conn = PG.connect( dbname: 'memo' )
-  conn.exec_params( "SELECT * FROM memo WHERE id = $1", [id] ) do |result|
-    target_memo = result.map { |row| row }
-  end
-  raise Sinatra::NotFound if target_memo.empty?
+  # conn.exec_params( "SELECT * FROM memo WHERE id = $1", [id] ) do |result|
+  #   target_memo = result.map { |row| row }
+  # end
+  search_result = conn.exec_params( "SELECT * FROM memo WHERE id = $1", [id] )
+  raise Sinatra::NotFound if search_result.ntuples.zero?
   
-  target_memo = hash_symbolize_keys(target_memo[0])
-  @memo = target_memo
+  @memo = symbolize_keys(search_result.first)
   conn.finish
   erb :edit
 end
