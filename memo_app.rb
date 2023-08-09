@@ -18,6 +18,15 @@ def symbolize_keys(hash)
   hash.transform_keys(&:to_sym)
 end
 
+def search_memo_by_id(id)
+  conn = PG.connect(dbname: 'memo')
+  search_result = conn.exec_params('SELECT * FROM memo WHERE id = $1', [id])
+  raise Sinatra::NotFound if search_result.ntuples.zero?
+
+  conn.finish
+  symbolize_keys(search_result.first)
+end
+
 get '/' do
   redirect to('/memos')
 end
@@ -50,13 +59,7 @@ end
 get '/memos/:id' do |id|
   @title = 'メモ詳細'
   @id = id
-
-  conn = PG.connect(dbname: 'memo')
-  search_result = conn.exec_params('SELECT * FROM memo WHERE id = $1', [id])
-  raise Sinatra::NotFound if search_result.ntuples.zero?
-
-  @memo = symbolize_keys(search_result.first)
-  conn.finish
+  @memo = search_memo_by_id(id)
   erb :memo
 end
 
@@ -77,13 +80,7 @@ end
 get '/memos/:id/edit' do |id|
   @title = 'メモ編集'
   @id = id
-
-  conn = PG.connect(dbname: 'memo')
-  search_result = conn.exec_params('SELECT * FROM memo WHERE id = $1', [id])
-  raise Sinatra::NotFound if search_result.ntuples.zero?
-
-  @memo = symbolize_keys(search_result.first)
-  conn.finish
+  @memo = search_memo_by_id(id)
   erb :edit
 end
 
