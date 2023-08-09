@@ -1,0 +1,17 @@
+<div>
+  <form action="/memos/<%= @id %>" method="post">
+    <div>
+      <label for="title">タイトル</label>
+      <input type="text" id="title" name="title" value="<%= h(@memo[:title]) %>" required>
+    </div>
+    <div>
+      <label for="content">本文</label>
+      <textarea id="content" name="content" cols="30" rows="10" required><%= h(@memo[:text]) %></textarea>
+    </div>
+    <div>
+      <a class="operation-button" href="/memos/<%= @id %>">戻る</a>
+      <input type="hidden" name="_method" value="patch">
+      <input class="operation-button" type="submit" value="変更">
+    </div>
+  </form>
+</div>
