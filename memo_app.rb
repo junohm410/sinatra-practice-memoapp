@@ -46,7 +46,7 @@ end
 post '/memos' do
   id = SecureRandom.uuid
   conn = PG.connect(dbname: 'memo')
-  conn.exec_params('INSERT INTO memo VALUES ($1, $2, $3, current_timestamp)', [id, params[:title], params[:content]])
+  conn.exec_params('INSERT INTO memo VALUES ($1, $2, $3, CURRENT_TIMESTAMP)', [id, params[:title], params[:content]])
   conn.finish
   redirect to('/memos')
 end
