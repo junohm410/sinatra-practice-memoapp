@@ -17,12 +17,12 @@ CREATE DATABASE memo;
 \c memo # memoデータベースに接続
 ```
 ```sql
-create table memo (
-  id char(36) not null,
-  title varchar(100) not null,
-  text varchar(1000) not null,
-  added_time TIMESTAMP not null,
-  primary key (id));
+CREATE TABLE memo (
+  id CHAR(36) NOT NULL,
+  title VARCHAR(100) NOT NULL,
+  text VARCHAR(1000) NOT NULL,
+  added_time TIMESTAMP NOT NULL,
+  PRIMARY KEY (id));
 ```
 
 ## インストール
