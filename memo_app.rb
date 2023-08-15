@@ -6,6 +6,8 @@ require 'cgi'
 require 'securerandom'
 require 'pg'
 
+CONN = PG.connect(dbname: 'memo')
+
 enable :method_override
 
 helpers do
@@ -19,11 +21,9 @@ def symbolize_keys(hash)
 end
 
 def search_memo_by_id(id)
-  conn = PG.connect(dbname: 'memo')
-  search_result = conn.exec_params('SELECT * FROM memo WHERE id = $1', [id])
+  search_result = CONN.exec_params('SELECT * FROM memo WHERE id = $1', [id])
   raise Sinatra::NotFound if search_result.ntuples.zero?
 
-  conn.finish
   symbolize_keys(search_result.first)
 end
 
@@ -33,20 +33,15 @@ end
 
 get '/memos' do
   @title = 'メモ一覧'
-
-  conn = PG.connect(dbname: 'memo')
   @memos =
-    conn.exec('SELECT * FROM memo ORDER BY added_time ASC') do |result|
+    CONN.exec('SELECT * FROM memo ORDER BY added_time ASC') do |result|
       result.map { |row| symbolize_keys(row) }
     end
-  conn.finish
   erb :memos
 end
 
 post '/memos' do
-  conn = PG.connect(dbname: 'memo')
-  conn.exec_params('INSERT INTO memo (title, text, added_time) VALUES ($1, $2, CURRENT_TIMESTAMP)', [params[:title], params[:content]])
-  conn.finish
+  CONN.exec_params('INSERT INTO memo (title, text, added_time) VALUES ($1, $2, CURRENT_TIMESTAMP)', [params[:title], params[:content]])
   redirect to('/memos')
 end
 
@@ -63,16 +58,12 @@ get '/memos/:id' do |id|
 end
 
 patch '/memos/:id' do |id|
-  conn = PG.connect(dbname: 'memo')
-  conn.exec_params('UPDATE memo SET title = $1, text = $2 WHERE id = $3', [params[:title], params[:content], id])
-  conn.finish
+  CONN.exec_params('UPDATE memo SET title = $1, text = $2 WHERE id = $3', [params[:title], params[:content], id])
   redirect to('/memos')
 end
 
 delete '/memos/:id' do |id|
-  conn = PG.connect(dbname: 'memo')
-  conn.exec_params('DELETE FROM memo WHERE id = $1', [id])
-  conn.finish
+  CONN.exec_params('DELETE FROM memo WHERE id = $1', [id])
   redirect to('/memos')
 end
 
