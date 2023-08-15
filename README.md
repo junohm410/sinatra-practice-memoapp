@@ -18,7 +18,7 @@ CREATE DATABASE memo;
 ```
 ```sql
 CREATE TABLE memo (
-  id CHAR(36) NOT NULL,
+  id SERIAL NOT NULL,
   title VARCHAR(100) NOT NULL,
   text VARCHAR(1000) NOT NULL,
   added_time TIMESTAMP NOT NULL,
