@@ -41,7 +41,7 @@ get '/memos' do
 end
 
 post '/memos' do
-  CONN.exec_params('INSERT INTO memo (title, text, added_time) VALUES ($1, $2, CURRENT_TIMESTAMP)', [params[:title], params[:content]])
+  CONN.exec_params('INSERT INTO memo (title, text) VALUES ($1, $2)', [params[:title], params[:content]])
   redirect to('/memos')
 end
 
